@@ -1,0 +1,40 @@
+﻿<Window x:Class="TrackBed.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TrackBed"
+        xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="auto" MinWidth="600"/>
+        </Grid.ColumnDefinitions>
+
+        <hx:Viewport3DX x:Name="view1" Camera="{Binding camera}" BackgroundColor="Gray" 
+                        EffectsManager="{Binding effectsManager}" 
+                        UseDefaultGestures="True" 
+                        Grid.Column="1"
+                        >
+            <hx:CoordinateSystemModel3D AxisYColor="#9900C800" AxisXColor="#99FF0000" AxisZColor="#990000FF"></hx:CoordinateSystemModel3D>
+            <hx:AmbientLight3D Color="White" />
+            <hx:DirectionalLight3D Direction="-2, -2, -4" Color="White" />
+
+
+            <hx:Viewport3DX.InputBindings>
+                <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
+                <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
+                <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
+                <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
+                <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
+                <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
+                <KeyBinding Command="hx:ViewportCommands.ZoomExtents" Gesture="Control+E" />
+                <MouseBinding Command="hx:ViewportCommands.Rotate" Gesture="LeftClick" />
+                <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
+                <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
+            </hx:Viewport3DX.InputBindings>
+        </hx:Viewport3DX>
+    </Grid>
+</Window>
