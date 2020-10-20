@@ -9,14 +9,24 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="auto" MinWidth="600"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
 
-        <hx:Viewport3DX x:Name="view1" Camera="{Binding camera}" BackgroundColor="Gray" 
+        <hx:Viewport3DX x:Name="view1" Camera="{Binding camera}" BackgroundColor="#222" 
                         EffectsManager="{Binding effectsManager}" 
                         UseDefaultGestures="True" 
                         Grid.Column="1"
+                        ShowViewCube="False"
+                        EnableSwapChainRendering = "true"
+                        EnableD2DRendering = "false" 
+                        MSAA="Maximum" 
+                        MouseMove3D="view1_MouseMove3D"
+                        
                         >
             <hx:CoordinateSystemModel3D AxisYColor="#9900C800" AxisXColor="#99FF0000" AxisZColor="#990000FF"></hx:CoordinateSystemModel3D>
             <hx:AmbientLight3D Color="White" />
@@ -35,6 +45,18 @@
                 <MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick" />
                 <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick" />
             </hx:Viewport3DX.InputBindings>
+
         </hx:Viewport3DX>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Background="#FF6B6B6B">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1" Name="label" HorizontalAlignment="Right"  Padding="5,1"/>
+        </Grid>
+        <StackPanel Grid.Column="0">
+            <Button Content="asd"/>
+            <Button Content="sensible" MouseEnter="Button_MouseEnter"/>
+        </StackPanel>
     </Grid>
 </Window>

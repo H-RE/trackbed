@@ -12,7 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Drawing;
 using System.Windows.Shapes;
+using SharpDX;
 
 namespace TrackBed
 {
@@ -27,11 +29,29 @@ namespace TrackBed
         public MeshGeometry3D mesh { get; private set; }
         public MainWindow()
         {
+            //Hacer ToolTip a los elementos
+            
             InitializeComponent();
+            //view1.EnableCurrentPosition = true;
             DataContext = this;
             effectsManager = new DefaultEffectsManager();
             camera = new PerspectiveCamera();
             var miPlano = new Plane2D(view1);
+            var point = new Node(new Vector3(0.5f,0.5f,1.1f));
+            view1.Items.Add(point.Model);
+        }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            MessageBox.Show("diste");
+
+        }
+
+        private void view1_MouseMove3D(object sender, RoutedEventArgs e)
+        {
+            //var args = e as Mouse3DEventArgs;
+            //var position = args.Position.ToVector2();
+            //label.Content = position.Y.ToString() ;
         }
     }
 }

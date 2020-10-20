@@ -18,9 +18,11 @@ namespace TrackBed
     //HACER UNA PROPIEDAD DE DEPENDENCIA PARA LA PROFUNDIDAD DEL PLANO
     class Plane2D
     {
+        //Agregar la posicion del elemento donde se encuentra actualmente dentro del plano
+        //Tal vez sea bueno que cada elemento tenga su traslación registrada
         List<Element3D> Items = new List<Element3D>();//hacer una clase aparte
         MeshGeometryModel3D plano = new MeshGeometryModel3D();
-        Viewport3DX viewport;
+        protected Viewport3DX viewport;
         public float Length;
         public Plane2D(Viewport3DX Viewport, float Length=5f)
         {
@@ -31,27 +33,53 @@ namespace TrackBed
             this.Length = Length;
             var meshbuilder = new MeshBuilder();
             var sd2 = Length / 2;
-            meshbuilder.AddQuad(
-                new Vector3(-sd2, sd2, 0),
-                new Vector3(-sd2, -sd2, 0),
-                new Vector3(sd2, -sd2, 0),
-                new Vector3(sd2, sd2, 0)
-                );
+            //meshbuilder.AddQuad(
+            //    new Vector3(-sd2, sd2, 0),
+            //    new Vector3(-sd2, -sd2, 0),
+            //    new Vector3(sd2, -sd2, 0),
+            //    new Vector3(sd2, sd2, 0)
+            //    );
+            meshbuilder.AddFacePZ();
             
             plano.Geometry = meshbuilder.ToMeshGeometry3D();
             plano.Geometry.IsDynamic = false;
             plano.Material = material;
             plano.IsTransparent = true;
             viewport.Items.Add(plano);
-
+            
             plano.MouseDown3D += Plano_MouseDown3D;
         }
+
 
         private void Plano_MouseDown3D(object sender, RoutedEventArgs e)
         {
             var args = e as Mouse3DEventArgs;
-            //checar con los comand bindings
-           
+            //checar con los comand bindings 
+        }
+
+        public void AddItem(Element3D Item,Vector2 position)
+        {
+            //Adds an item on the plane at the given 2D position
+            Item.MouseDown3D += Item_MouseDown3D;
+            Item.MouseUp3D += Item_MouseUp3D;
+            Item.MouseMove3D += Item_MouseMove3D;
+            Items.Add(Item);
+            viewport.Items.Add(Item);
+        }
+
+        private void Item_MouseMove3D(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Item_MouseUp3D(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Item_MouseDown3D(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         public void Hide()
@@ -70,6 +98,5 @@ namespace TrackBed
             plano.AlwaysHittable = false;
             plano.IsRendering = false;
         }
-        
     }
 }

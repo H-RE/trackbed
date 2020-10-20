@@ -1,0 +1,5 @@
+#add some files
+bin/*
+obj/*
+Properties/*
+packages.config
