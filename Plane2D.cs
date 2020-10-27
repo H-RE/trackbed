@@ -33,14 +33,13 @@ namespace TrackBed
             this.Length = Length;
             var meshbuilder = new MeshBuilder();
             var sd2 = Length / 2;
-            //meshbuilder.AddQuad(
-            //    new Vector3(-sd2, sd2, 0),
-            //    new Vector3(-sd2, -sd2, 0),
-            //    new Vector3(sd2, -sd2, 0),
-            //    new Vector3(sd2, sd2, 0)
-            //    );
-            meshbuilder.AddFacePZ();
-            
+            meshbuilder.AddQuad(
+                new Vector3(-sd2, sd2, 0),
+                new Vector3(-sd2, -sd2, 0),
+                new Vector3(sd2, -sd2, 0),
+                new Vector3(sd2, sd2, 0)
+                );
+            //meshbuilder.AddFacePZ();
             plano.Geometry = meshbuilder.ToMeshGeometry3D();
             plano.Geometry.IsDynamic = false;
             plano.Material = material;
