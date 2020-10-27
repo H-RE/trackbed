@@ -85,12 +85,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BoundingRectangle.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="ElectroNode.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="Node.cs" />
-    <Compile Include="SelectionBox.cs" />
+    <Compile Include="QuadTree.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

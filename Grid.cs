@@ -43,21 +43,31 @@ namespace TrackBed
 
         }
         
-        public void SetDirection(Point Pmovil)//Pasar la direccion ya normalizada como argumento
+        public void SetDirection(Vector direction)//Pasar la direccion ya normalizada como argumento
         {
             //Verificar que la grilla no esté fija
-            var Dif = Pmovil - Position;
-            Dif.Normalize();
+            
             foreach(var cell in Positions)
             {
-                cell.X = cell.X * Pmovil.X - cell.Y * Pmovil.Y;
-                cell.Y = cell.Y * Pmovil.X + cell.X * Pmovil.Y;
+                cell.X = cell.X * direction.X - cell.Y * direction.Y;
+                cell.Y = cell.Y * direction.X + cell.X * direction.Y;
             }
+            
+            
         }
-        public void ShiftXColumn(double position, double distance)
+        public bool ShiftXColumn(double position, double distance)
         {   //Recorre la posicion de un punto una distancia especificada
-            //en la dirección X de la grilla
+            //en la dirección X de la grilla, Agrega o quita columnas 
 
+            //var pointer = Find puntero columna
+            //if(no hay algo en la posicion) return false;
+            
+            return true;
+        }
+        public int GetQadTree()
+        {
+            
+            return 0;
         }
        
         public void RotOnBase()
@@ -78,4 +88,5 @@ namespace TrackBed
             PositionOnBase.Y += Y;
         }
     }
+    
 }

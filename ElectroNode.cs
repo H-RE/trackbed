@@ -31,11 +31,13 @@ namespace TrackBed
         {
             //Se pone la posicion del Movil y el tipo de elemento que la ocupa
             ElementGrid.FillCell(Movil.Position,Movil);
+
         }
         public void Update()
         {
             //La linea rota respecto al origen de la grilla
-            ElementGrid.Rot(Movil.Position);
+            var direction = (Movil.Position - Fixed.Position).normalize();
+            ElementGrid.SetDirection(direction);
             //Actualiza las dimensiones de la Grilla
             //Actualiza la posicion de la grilla
             //Actualiza las posiciones afectadas debido al cambio de tamaño y rotación
