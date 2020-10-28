@@ -17,11 +17,15 @@ namespace TrackBed
             Dimensions = Region;
             Lead = lead;
             //Box = box;
+            child[0] = null;
+            child[1] = null;
+            child[2] = null;
+            child[3] = null;
         }
         public bool AddCell(Cell cell)//Regresa true si todo el arbol es negro
         {
             //Si hay en toda la region partela en 4 y metete a cada region
-            if (CellInRange(cell))
+            if (Dimensions.InRange(cell))
             {
                 if(Dimensions.Length>Lead)
                 {
@@ -58,23 +62,29 @@ namespace TrackBed
             }
             return false;
         }
-        public bool CellInRange(Cell cell)//Busca en toda la region de este arbol
+        
+        public bool IsFilled(Cell cell)
         {
-            var x = cell.X;
-            var y = cell.Y;
-            var disX = Math.Abs(x - Dimensions.Center.X);
-            var disY = Math.Abs(y - Dimensions.Center.Y);
-            bool XinRange = disX < Dimensions.GetHalfLength();//Optimizar esto
-            bool YinRange = disY < Dimensions.GetHalfLength();
-            return XinRange && YinRange;
-        }
-        public bool Find(Cell cell)
-        {
-
+            if (Dimensions.InRange(cell))//Verifica si el punto se encuentra en ese cuadrante
+            {
+                if (fill == Fill.White) return false;
+                if (fill == Fill.Gray)
+                {
+                    //Optimizar con cell-center.X>0 .Y>0 -> i=0;  X<0 Y>0 -> i=1; ...
+                    //Detecta si sale del rango?
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if( child[i].IsFilled(cell))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                if (fill == Fill.Black) return true;
+            }
             return false;
         }
     }
-
     class Square 
     {
         //ACTUALIZAR PARA EVITAR REDONDEOS Y SEA LA POSICION DESEADA
@@ -85,12 +95,11 @@ namespace TrackBed
 
         public bool InRange(Cell cell)//Busca en toda la region de este arbol
         {
-            var x = cell.X;
-            var y = cell.Y;
-            var disX = Math.Abs(x - Center.X);
-            var disY = Math.Abs(y - Center.Y);
-            bool XinRange = disX < GetHalfLength();//Optimizar esto
-            bool YinRange = disY < GetHalfLength();
+            var disX = Math.Abs(cell.X - Center.X);
+            var disY = Math.Abs(cell.Y - Center.Y);
+            var HalfLength = Length / 2;
+            bool XinRange = disX < HalfLength;
+            bool YinRange = disY < HalfLength;
             return XinRange && YinRange;
         }
 
