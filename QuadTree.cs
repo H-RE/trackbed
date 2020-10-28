@@ -8,10 +8,10 @@ namespace TrackBed
         //Hacer que las celdas sean moviles para que se desplazen rápido
         QuadTree []child;
         readonly double Lead;
-        DiscreteSquare Dimensions;
+        Square Dimensions;
         public Fill fill { get; private set; }
 
-        public QuadTree(DiscreteSquare Region,double lead)
+        public QuadTree(Square Region,double lead)
         {
             child = new QuadTree[4];
             Dimensions = Region;
@@ -39,7 +39,7 @@ namespace TrackBed
                         fill = Fill.Black;
                         Array.Clear(child, 0, 4);
                     }
-                    else fill = Fill.Gray;
+                    else { fill = Fill.Gray; }
 
                     return BlackTree;
                 }
@@ -54,13 +54,14 @@ namespace TrackBed
             {
                 //Si no hay nada entonces llenar con blanco toda la region
                 fill = Fill.White;
+                Array.Clear(child, 0, 4);
             }
             return false;
         }
         public bool CellInRange(Cell cell)//Busca en toda la region de este arbol
-        { 
-            var x = 54;//Pasar la posicion de la celda
-            var y = 21;
+        {
+            var x = cell.X;
+            var y = cell.Y;
             var disX = Math.Abs(x - Dimensions.Center.X);
             var disY = Math.Abs(y - Dimensions.Center.Y);
             bool XinRange = disX < Dimensions.GetHalfLength();//Optimizar esto
@@ -74,17 +75,26 @@ namespace TrackBed
         }
     }
 
-    class DiscreteSquare
+    class Square 
     {
+        //ACTUALIZAR PARA EVITAR REDONDEOS Y SEA LA POSICION DESEADA
         public Point Center { get; set; }
-        public int Length { get; set; }
-        //public double Lead { get; set; }
-        public double Xmin { get; set; }
-        public double Xmax { get; set; }
-        public double Ymin { get; set; }
-        public double Ymax { get; set; }
-        
-        public DiscreteSquare GetQuadrant(int iQuad)
+        public double Length { get; private set; }
+        public double Lead { get; set; }
+        private readonly int Power;
+
+        public bool InRange(Cell cell)//Busca en toda la region de este arbol
+        {
+            var x = cell.X;
+            var y = cell.Y;
+            var disX = Math.Abs(x - Center.X);
+            var disY = Math.Abs(y - Center.Y);
+            bool XinRange = disX < GetHalfLength();//Optimizar esto
+            bool YinRange = disY < GetHalfLength();
+            return XinRange && YinRange;
+        }
+
+        public Square GetQuadrant(int iQuad)
         {
             var Qcenter = new Point();
             var QLength = Length / 4;
@@ -108,16 +118,25 @@ namespace TrackBed
                     Qcenter.Y = Center.Y - QLength;
                     break;
             };
-            return new DiscreteSquare(Qcenter, Length / 2);
+            return new Square(Qcenter, Power - 1, Lead); //Se puede optimizar si ya se pasara Length en potencia de 2
         }
-        public int GetHalfLength()
+        public double GetHalfLength()
         {
             return Length / 2;
         }
-        public DiscreteSquare(Point center, int length)
+
+        //Se puede optimizar si ya se pasara Length en potencia de 2
+        public Square(Point center, int Power, double Lead)
         {
+            this.Lead = Lead;
             Center = center;
-            Length = length;
+            this.Power = Power;
+            var Units = 1;//Number of rectangles
+            for(int i=0; i<Power; i++)
+            {
+                Units *= 2;
+            }
+            Length = Lead * Units;
         }
     }
     enum Fill { Black, Gray, White }
