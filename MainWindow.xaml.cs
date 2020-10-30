@@ -37,8 +37,7 @@ namespace TrackBed
             effectsManager = new DefaultEffectsManager();
             camera = new PerspectiveCamera();
             var miPlano = new Plane2D(view1);
-            var point = new Node(new Vector3(0.5f,0.5f,1.1f));
-            view1.Items.Add(point.Model);
+            
         }
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)

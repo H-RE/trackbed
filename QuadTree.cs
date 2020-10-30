@@ -6,128 +6,120 @@ namespace TrackBed
     class QuadTree
     {
         //Hacer que las celdas sean moviles para que se desplazen rápido
-        QuadTree []child;
-        readonly double Lead;
+        QuadTree[] child;
         Square Dimensions;
-        public Fill fill { get; private set; }
+        private Fill fill;
 
-        public QuadTree(Square Region,double lead)
+        public QuadTree(Square Region)
         {
             child = new QuadTree[4];
             Dimensions = Region;
-            Lead = lead;
-            //Box = box;
             child[0] = null;
             child[1] = null;
             child[2] = null;
             child[3] = null;
+            fill = Fill.White;
         }
-        public bool AddCell(Cell cell)//Regresa true si todo el arbol es negro
+        public bool AddCell(Cell cell)
         {
-            //Si hay en toda la region partela en 4 y metete a cada region
-            if (Dimensions.InRange(cell))
-            {
-                if(Dimensions.Length>Lead)
-                {
-                    bool BlackTree = true;//Sirve para revisar que todos los cuadrantes sean negros
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var Region = Dimensions.GetQuadrant(i);
-                        child[i] = new QuadTree(Region, Lead);
-                        
-                        BlackTree= child[i].AddCell(cell) && BlackTree;
-                    }
-                    //Si no se completo el Quadtree llenar este arbol con gris, si se completo llenar con blanco
-                    if (BlackTree)
-                    {
-                        fill = Fill.Black;
-                        Array.Clear(child, 0, 4);
-                    }
-                    else { fill = Fill.Gray; }
+            if (!Dimensions.InRange(cell)) return false;
+            if (fill == Fill.Black) return true;
 
-                    return BlackTree;
-                }
-                else
-                {   //Si se encontro algo en el cuadrante y se alcanzó la longitud 
-                    //minima, llenar con negro
-                    fill = Fill.Black;
-                    return true;
-                }
-            }
-            else
+            if (Dimensions.IsValid())//Evita que se subdivida cuando alcanzó su longitud minima
             {
-                //Si no hay nada entonces llenar con blanco toda la region
-                fill = Fill.White;
-                Array.Clear(child, 0, 4);
+                bool BlackTree = true;//Determina si los 4 cuadrantes pueden formar 1 solo nodo
+                var Quad = Dimensions.IQuad(cell);
+                if (child[Quad] == null)
+                {
+                    var Region = Dimensions.GetQuadrant(Quad);
+                    child[Quad] = new QuadTree(Region);
+                }
+                child[Quad].AddCell(cell);
+                for (int i = 0; i < 4; i++)//Verifica si todos los cuadrantes tienen el mismo valor
+                {
+                    if (i == Quad) continue;
+                    if (child[i] == null) { BlackTree = false; break; }
+                    BlackTree = (child[i].fill == Fill.Black) && BlackTree;
+                }
+                if (BlackTree)//si todos tienen el mismo valor, une todos los elementos
+                {
+                    fill = Fill.Black;
+                    Array.Clear(child, 0, 4);
+                }
+                return true; ;
             }
-            return false;
+            fill = Fill.Black;
+            return true;
         }
-        
         public bool IsFilled(Cell cell)
         {
-            if (Dimensions.InRange(cell))//Verifica si el punto se encuentra en ese cuadrante
-            {
-                if (fill == Fill.White) return false;
-                if (fill == Fill.Gray)
-                {
-                    //Optimizar con cell-center.X>0 .Y>0 -> i=0;  X<0 Y>0 -> i=1; ...
-                    //Detecta si sale del rango?
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if( child[i].IsFilled(cell))
-                        {
-                            return true;
-                        }
-                    }
-                }
-                if (fill == Fill.Black) return true;
-            }
-            return false;
+            //Se puede optimizar sacando InRange(cell)
+            //Si el punto no está en cuadrante, o el cuadrante es blanco
+            //if ((fill == Fill.White) || !Dimensions.InRange(cell)) return false;
+            if (!Dimensions.InRange(cell)) return false;
+            if (fill == Fill.Black) return true;
+            var Child = child[Dimensions.IQuad(cell)];
+            if (Child == null) return false;
+
+            return Child.IsFilled(cell);
         }
     }
-    class Square 
+    class Square
     {
-        //ACTUALIZAR PARA EVITAR REDONDEOS Y SEA LA POSICION DESEADA
         public Point Center { get; set; }
         public double Length { get; private set; }
         public double Lead { get; set; }
         private readonly int Power;
 
-        public bool InRange(Cell cell)//Busca en toda la region de este arbol
+        public bool InRange(Cell cell)
         {
             var disX = Math.Abs(cell.X - Center.X);
             var disY = Math.Abs(cell.Y - Center.Y);
             var HalfLength = Length / 2;
-            bool XinRange = disX < HalfLength;
-            bool YinRange = disY < HalfLength;
+            bool XinRange = disX <= HalfLength;
+            bool YinRange = disY <= HalfLength;
             return XinRange && YinRange;
         }
 
+        public bool IsValid()
+        {
+            return Power > 0;
+        }
+        public int IQuad(Cell cell)
+        {
+            var difX = cell.X - Center.X;
+            var difY = cell.Y - Center.Y;
+            if (difX > 0)
+            {
+                return difY > 0 ? 0 : 3;
+            }
+            return difY > 0 ? 1 : 2;
+        }
         public Square GetQuadrant(int iQuad)
         {
             var Qcenter = new Point();
             var QLength = Length / 4;
-            
-            switch (iQuad)
+
+            switch (iQuad)//SE MODIFICARON LOS INDICES DEL SWITCH
             {
-                case 1:
+                case 0:
                     Qcenter.X = Center.X + QLength;
+                    Qcenter.Y = Center.Y + QLength;
+                    break;
+                case 1:
+                    Qcenter.X = Center.X - QLength;
                     Qcenter.Y = Center.Y + QLength;
                     break;
                 case 2:
                     Qcenter.X = Center.X - QLength;
-                    Qcenter.Y = Center.Y + QLength;
-                    break;
-                case 3:
-                    Qcenter.X = Center.X - QLength;
                     Qcenter.Y = Center.Y - QLength;
                     break;
-                case 4:
+                case 3:
                     Qcenter.X = Center.X + QLength;
                     Qcenter.Y = Center.Y - QLength;
                     break;
             };
-            return new Square(Qcenter, Power - 1, Lead); //Se puede optimizar si ya se pasara Length en potencia de 2
+            return new Square(Qcenter, Power - 1, Lead);
         }
         public double GetHalfLength()
         {
@@ -141,7 +133,7 @@ namespace TrackBed
             Center = center;
             this.Power = Power;
             var Units = 1;//Number of rectangles
-            for(int i=0; i<Power; i++)
+            for (int i = 0; i < Power; i++)
             {
                 Units *= 2;
             }
